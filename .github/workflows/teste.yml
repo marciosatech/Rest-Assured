@@ -5,6 +5,7 @@ on:
     branches: [ "main", "master" ] # Altere para a branch principal do seu projeto se for diferente
   pull_request:
     branches: [ "main", "master" ]
+  workflow_dispatch: # Adicione esta linha para habilitar o botão manual
 
 jobs:
   test:
