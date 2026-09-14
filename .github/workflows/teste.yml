@@ -1,0 +1,28 @@
+name: Testes Automatizados - Rest Assured
+
+on:
+  push:
+    branches: [ "main", "master" ] # Altere para a branch principal do seu projeto se for diferente
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Faz o download do código do repositório para o runner
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # 2. Configura a versão do Java JDK (mude para '11', '17' ou '21' conforme o seu projeto)
+      - name: Configurar o Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      # 3. Executa a limpeza e os testes automatizados via Maven
+      - name: Executar testes com Maven
+        run: mvn clean test
