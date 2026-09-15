@@ -8,8 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write     # necessário para publicar o relatório na branch gh-pages
-  checks: write       # necessário para o resumo de testes no Job Summary
+  contents: write  # necessário para publicar o relatório na branch gh-pages
 
 jobs:
   test:
@@ -42,14 +41,69 @@ jobs:
       - name: Executar testes com Maven
         run: mvn clean test
 
-      # 5. Publica um resumo dos testes (passou/falhou) no Job Summary do GitHub Actions
+      # 5. Publica um resumo visual dos testes (passou/falhou) no Job Summary do GitHub Actions
       - name: Publicar resumo dos testes
         if: always()
-        uses: mikepenz/action-junit-report@v4
-        with:
-          report_paths: 'target/surefire-reports/*.xml'
-          job_summary: true
-          detailed_summary: true
+        run: |
+          TESTS=0; FAILURES=0; ERRORS=0; SKIPPED=0
+
+          for f in target/surefire-reports/*.xml; do
+            [ -e "$f" ] || continue
+            T=$(grep -oP 'tests="\K[0-9]+' "$f" | head -1)
+            FA=$(grep -oP 'failures="\K[0-9]+' "$f" | head -1)
+            ER=$(grep -oP 'errors="\K[0-9]+' "$f" | head -1)
+            SK=$(grep -oP 'skipped="\K[0-9]+' "$f" | head -1)
+            TESTS=$((TESTS + ${T:-0}))
+            FAILURES=$((FAILURES + ${FA:-0}))
+            ERRORS=$((ERRORS + ${ER:-0}))
+            SKIPPED=$((SKIPPED + ${SK:-0}))
+          done
+
+          PASSED=$((TESTS - FAILURES - ERRORS - SKIPPED))
+
+          if [ "$TESTS" -gt 0 ]; then
+            PERCENT=$(( PASSED * 100 / TESTS ))
+          else
+            PERCENT=0
+          fi
+
+          if [ "$FAILURES" -eq 0 ] && [ "$ERRORS" -eq 0 ]; then
+            STATUS_EMOJI="🟢"
+            STATUS_TEXT="Todos os testes passaram"
+          else
+            STATUS_EMOJI="🔴"
+            STATUS_TEXT="Existem testes falhando"
+          fi
+
+          {
+            echo "## ${STATUS_EMOJI} Resultado dos Testes — ${STATUS_TEXT}"
+            echo ""
+            echo "**${PASSED}/${TESTS} testes passaram (${PERCENT}%)**"
+            echo ""
+            echo "| Status | Quantidade |"
+            echo "|---|---:|"
+            echo "| ✅ Passou | ${PASSED} |"
+            echo "| ❌ Falhou | ${FAILURES} |"
+            echo "| 🔥 Erro | ${ERRORS} |"
+            echo "| ⏭️ Pulado | ${SKIPPED} |"
+            echo "| 📊 Total | ${TESTS} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$FAILURES" -gt 0 ] || [ "$ERRORS" -gt 0 ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "### ❌ Testes que falharam" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            for f in target/surefire-reports/*.xml; do
+              [ -e "$f" ] || continue
+              awk '
+                /<testcase / { name=""; classname=""; failing=0 }
+                /classname="/ { match($0, /classname="[^"]*"/); classname=substr($0, RSTART+11, RLENGTH-12) }
+                /name="/ { match($0, /name="[^"]*"/); name=substr($0, RSTART+6, RLENGTH-7) }
+                /<failure|<error/ { failing=1 }
+                /<\/testcase>/ { if (failing) print "- `" classname "." name "`" }
+              ' "$f" >> "$GITHUB_STEP_SUMMARY"
+            done
+          fi
 
       # 6. Busca o histórico das execuções anteriores (fica salvo na branch gh-pages)
       - name: Carregar histórico do Allure
