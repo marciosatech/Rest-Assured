@@ -42,15 +42,15 @@ Este repositório tem como objetivo praticar e demonstrar boas práticas de auto
 Rest-Assured/
 ├─ 📁 .github/
 │   └── 📁 workflows/
-│       └── 📄 teste.yml                   # Pipeline de CI/CD (testes + relatório Allure)
+│       └── 📄 teste.yml                   # Pipeline de CI/CD
 ├── 📁 src/
 │   ├── 📁 main/
-│   │   └── 📁 resources/                  # Recursos de aplicação (não utilizados nos testes)
+│   │   └── 📁 resources/                  
 │   └── 📁 test/
 │       ├── 📁 java/
 │       │   ├── 📄 BookingTest.java        # Cenários de teste da API de bookings
 │       │   └── 📄 BookingEndpoint.java    # Encapsulamento de endpoints (Page Object da API)
-│       └── 📁 resources/
+│       └── 📁 resources/                  # Recursos de aplicação (não utilizados nos testes)
 │           ├── 📁 payloads/
 │           │   └── 📄 reserva.json        # Payload utilizado no teste de criação de reserva
 │           └── 📄 environment.properties  # Gerado dinamicamente pela pipeline a cada execução
