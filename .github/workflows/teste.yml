@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main", "master" ]
   workflow_dispatch:
+    inputs:
+      test_tag:
+        description: 'Tag dos testes a executar (ex: consulta, cadastro). Deixe em branco para rodar todos.'
+        required: false
+        default: ''
 
 permissions:
   contents: write  # necessário para publicar o relatório na branch gh-pages
@@ -38,8 +43,17 @@ jobs:
           echo "Executor=GitHub Actions" >> src/test/resources/environment.properties
 
       # 4. Executa os testes (não trava o build mesmo com falhas, graças ao testFailureIgnore)
+      #    Se uma tag for informada no disparo manual, roda só os testes daquela tag.
       - name: Executar testes com Maven
-        run: mvn clean test
+        run: |
+          TAG="${{ github.event.inputs.test_tag }}"
+          if [ -n "$TAG" ]; then
+            echo "Rodando apenas os testes com a tag: $TAG"
+            mvn clean test -Dgroups="$TAG"
+          else
+            echo "Rodando todos os testes"
+            mvn clean test
+          fi
 
       # 5. Publica um resumo visual dos testes (passou/falhou) no Job Summary do GitHub Actions
       - name: Publicar resumo dos testes
