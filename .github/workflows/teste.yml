@@ -27,11 +27,21 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      # 3. Executa os testes (não trava o build mesmo com falhas, graças ao testFailureIgnore)
+      # 3. Gera o environment.properties dinamicamente com os dados reais do runner
+      - name: Gerar environment.properties
+        run: |
+          mkdir -p src/test/resources
+          echo "OS=$(uname -a)" > src/test/resources/environment.properties
+          echo "Java.Version=$(java -version 2>&1 | head -n 1)" >> src/test/resources/environment.properties
+          echo "Browser=N/A (API tests)" >> src/test/resources/environment.properties
+          echo "URL=https://restful-booker.herokuapp.com" >> src/test/resources/environment.properties
+          echo "Executor=GitHub Actions" >> src/test/resources/environment.properties
+
+      # 4. Executa os testes (não trava o build mesmo com falhas, graças ao testFailureIgnore)
       - name: Executar testes com Maven
         run: mvn clean test
 
-      # 4. Busca o histórico das execuções anteriores (fica salvo na branch gh-pages)
+      # 5. Busca o histórico das execuções anteriores (fica salvo na branch gh-pages)
       - name: Carregar histórico do Allure
         uses: actions/checkout@v4
         if: always()
@@ -48,7 +58,7 @@ jobs:
             cp -r gh-pages/history/* target/allure-results/history/ || true
           fi
 
-      # 5. Gera o relatório HTML já com o histórico incluído
+      # 6. Gera o relatório HTML já com o histórico incluído
       - name: Gerar relatório Allure
         if: always()
         uses: simple-elf/allure-report-action@master
@@ -57,12 +67,12 @@ jobs:
           allure_history: allure-history
           keep_reports: 20
 
-      # 5.1 Remove metadados git residuais que ficam dentro de allure-history
+      # 6.1 Remove metadados git residuais que ficam dentro de allure-history
       - name: Limpar .git residual do histórico
         if: always()
         run: sudo rm -rf allure-history/.git
 
-      # 6. Publica o relatório (com o novo histórico) na branch gh-pages
+      # 7. Publica o relatório (com o novo histórico) na branch gh-pages
       - name: Publicar relatório no GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v3
