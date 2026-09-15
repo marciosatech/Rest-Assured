@@ -129,7 +129,6 @@ A cada `push` nas branches `main`/`master`, em Pull Requests, ou manualmente via
 7. Geração do **relatório Allure**, já incorporando o histórico;
 8. Publicação do relatório atualizado na branch `gh-pages`;
 9. Publicação do **link direto do relatório** no resumo da execução.
-
 ---
 
 ### 📊 Relatório Allure publicado
@@ -137,6 +136,21 @@ A cada `push` nas branches `main`/`master`, em Pull Requests, ou manualmente via
 O relatório mais recente fica sempre disponível em:
 
 **[https://marciosatech.github.io/Rest-Assured/](https://marciosatech.github.io/Rest-Assured/)**
+
+---
+
+### 🎯 Execução manual seletiva por tag
+
+Além de rodar automaticamente a cada `push`/Pull Request, o workflow pode ser disparado manualmente escolhendo **quais testes executar**, através de uma lista suspensa:
+
+1. Vá em **Actions > Testes Automatizados - Rest Assured**;
+2. Clique em **Run workflow**;
+3. Selecione uma das opções no campo **"Quais testes executar?"**:
+    - `Todos` — roda a suíte completa (padrão);
+    - `Consulta` — roda apenas os testes marcados com `@Tag("Consulta")` (endpoints de busca);
+    - `Cadastro` — roda apenas os testes marcados com `@Tag("Cadastro")` (endpoints de criação);
+4. Clique em **Run workflow** para confirmar.
+   O título da execução na lista do Actions reflete automaticamente a tag escolhida (ex: `🧪 Execução manual — Consulta`), facilitando identificar o que foi rodado sem precisar abrir os detalhes.
 
 ---
 
