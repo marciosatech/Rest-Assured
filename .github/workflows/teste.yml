@@ -8,7 +8,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write  # necessário para publicar o relatório na branch gh-pages
+  contents: write     # necessário para publicar o relatório na branch gh-pages
+  checks: write       # necessário para o resumo de testes no Job Summary
 
 jobs:
   test:
@@ -41,7 +42,16 @@ jobs:
       - name: Executar testes com Maven
         run: mvn clean test
 
-      # 5. Busca o histórico das execuções anteriores (fica salvo na branch gh-pages)
+      # 5. Publica um resumo dos testes (passou/falhou) no Job Summary do GitHub Actions
+      - name: Publicar resumo dos testes
+        if: always()
+        uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: 'target/surefire-reports/*.xml'
+          job_summary: true
+          detailed_summary: true
+
+      # 6. Busca o histórico das execuções anteriores (fica salvo na branch gh-pages)
       - name: Carregar histórico do Allure
         uses: actions/checkout@v4
         if: always()
@@ -58,7 +68,7 @@ jobs:
             cp -r gh-pages/history/* target/allure-results/history/ || true
           fi
 
-      # 6. Gera o relatório HTML já com o histórico incluído
+      # 7. Gera o relatório HTML já com o histórico incluído
       - name: Gerar relatório Allure
         if: always()
         uses: simple-elf/allure-report-action@master
@@ -67,12 +77,12 @@ jobs:
           allure_history: allure-history
           keep_reports: 20
 
-      # 6.1 Remove metadados git residuais que ficam dentro de allure-history
+      # 7.1 Remove metadados git residuais que ficam dentro de allure-history
       - name: Limpar .git residual do histórico
         if: always()
         run: sudo rm -rf allure-history/.git
 
-      # 7. Publica o relatório (com o novo histórico) na branch gh-pages
+      # 8. Publica o relatório (com o novo histórico) na branch gh-pages
       - name: Publicar relatório no GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v3
