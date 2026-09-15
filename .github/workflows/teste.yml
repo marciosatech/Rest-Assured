@@ -1,5 +1,10 @@
 name: Testes Automatizados - Rest Assured
 
+run-name: >-
+  ${{ github.event_name == 'workflow_dispatch'
+      && format('🧪 Execução manual — {0}', github.event.inputs.test_tag)
+      || github.event.head_commit.message }}
+
 on:
   push:
     branches: [ "main", "master" ]
@@ -8,15 +13,21 @@ on:
   workflow_dispatch:
     inputs:
       test_tag:
-        description: 'Tag dos testes a executar (ex: consulta, cadastro). Deixe em branco para rodar todos.'
+        description: 'Quais testes executar?'
         required: false
-        default: ''
+        type: choice
+        default: 'Todos'
+        options:
+          - 'Todos'
+          - 'Consulta'
+          - 'Cadastro'
 
 permissions:
   contents: write  # necessário para publicar o relatório na branch gh-pages
 
 jobs:
   test:
+    name: Executar Testes e Gerar Relatório
     runs-on: ubuntu-latest
 
     steps:
@@ -43,11 +54,11 @@ jobs:
           echo "Executor=GitHub Actions" >> src/test/resources/environment.properties
 
       # 4. Executa os testes (não trava o build mesmo com falhas, graças ao testFailureIgnore)
-      #    Se uma tag for informada no disparo manual, roda só os testes daquela tag.
+      #    Se uma tag específica for selecionada no disparo manual, roda só os testes daquela tag.
       - name: Executar testes com Maven
         run: |
           TAG="${{ github.event.inputs.test_tag }}"
-          if [ -n "$TAG" ]; then
+          if [ -n "$TAG" ] && [ "$TAG" != "Todos" ]; then
             echo "Rodando apenas os testes com a tag: $TAG"
             mvn clean test -Dgroups="$TAG"
           else
