@@ -20,45 +20,6 @@ Este repositório tem como objetivo praticar e demonstrar boas práticas de auto
 
 ---
 
-```text
-📁 .github/workflows/ # 
-📁 api-tests/
-📁 automation/
-   ├── robot/
-   ├── cypress/
-   └── playwright/
-📁 bdd/
-📁 docs/
-📁 manual-tests/
-📁 reports/
-📁 test-cases/
-📁 test-plan/
-README.md
-```
-
-
-# 🧪 Rest-Assured — Testes Automatizados de API
-
-![Testes Automatizados - Rest Assured](https://github.com/marciosatech/Rest-Assured/actions/workflows/teste.yml/badge.svg)
-![Java](https://img.shields.io/badge/Java-17-orange)
-![Maven](https://img.shields.io/badge/Maven-Build-C71A36)
-![Allure Report](https://img.shields.io/badge/Allure-Report-orange)
-
-Projeto de automação de testes de API construído com **REST Assured** e **JUnit 5**, cobrindo os principais fluxos do serviço público [restful-booker](https://restful-booker.herokuapp.com/apidoc/index.html). O projeto conta com relatórios visuais via **Allure Report** e uma pipeline de CI/CD totalmente automatizada no **GitHub Actions**, que executa os testes a cada push e publica o relatório no GitHub Pages.
-
----
-
-## 📖 Sobre o projeto
-
-Este repositório tem como objetivo praticar e demonstrar boas práticas de automação de testes de API, incluindo:
-
-- Escrita de cenários de teste com REST Assured (GET, POST) sobre a API pública Restful Booker;
-- Geração de relatórios ricos e navegáveis com o Allure Report, incluindo request/response de cada chamada HTTP;
-- Pipeline de CI/CD no GitHub Actions, com execução automática dos testes, geração de resumo visual dos resultados e publicação do relatório no GitHub Pages;
-- Histórico de execuções (Trend) preservado entre builds, permitindo acompanhar a evolução dos testes ao longo do tempo.
-
----
-
 ## 🚀 Tecnologias utilizadas
 
 | Categoria           | Tecnologia                         |
@@ -79,7 +40,7 @@ Este repositório tem como objetivo praticar e demonstrar boas práticas de auto
 
 ```
 Rest-Assured/
-├── 📁 .github/
+├─ 📁 .github/
 │   └── 📁 workflows/
 │       └── 📄 teste.yml                   # Pipeline de CI/CD (testes + relatório Allure)
 ├── 📁 src/
