@@ -1,0 +1,5 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","512","testGetBooking()","","2026-09-15","passed","2026-09-15","","BookingTest","BookingTest","testGetBooking"
+"","2202","cadastrarReserva()","","2026-09-15","passed","2026-09-15","","BookingTest","BookingTest","cadastrarReserva"
+"","378","testWithId()","","2026-09-15","failed","2026-09-15","","BookingTest","BookingTest","testWithId"
+"","577","consultaPageObjects()","","2026-09-15","passed","2026-09-15","","BookingTest","BookingTest","consultaPageObjects"
