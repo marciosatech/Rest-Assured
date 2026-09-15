@@ -1,0 +1,1 @@
+![Testes Automatizados - Rest Assured](https://github.com/marciosatech/Rest-Assured/actions/workflows/teste.yml/badge.svg)
