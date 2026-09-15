@@ -23,6 +23,7 @@ public class BookingTest {
     }
 
     // Define um método de teste
+    @Tag("Consulta")
     @Test
     public void testGetBooking() {
         // Configura a URL base para as requisições da API
@@ -38,6 +39,7 @@ public class BookingTest {
                 .log().all();    // Loga no console todos os detalhes da resposta (body, headers, etc.)
     }
 
+    @Tag("Consulta")
     @Test
     public void testWithId() {
         RestAssured.baseURI = "https://restful-booker.herokuapp.com";
@@ -57,7 +59,7 @@ public class BookingTest {
                 .body("additionalneeds", equalTo("midnight snack"));
     }
 
-    @Tag("smoke")
+    @Tag("Cadastro")
     @Test
     public void cadastrarReserva() throws IOException {
         RestAssured.baseURI = "https://restful-booker.herokuapp.com";

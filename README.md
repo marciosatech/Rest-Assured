@@ -73,15 +73,44 @@ Rest-Assured/
 
 ### Executando os testes
 
-```bash
-mvn clean test
-```
+Existem algumas formas de rodar os testes localmente, dependendo do que você precisa validar:
 
-### Gerando e visualizando o relatório Allure
+**1. Rodar todos os testes**
 
 ```bash
-mvn allure:serve
+mvn test
 ```
+
+**2. Rodar testes de uma classe específica**
+
+```bash
+mvn -Dtest=NomeDaClasseDeTeste test
+```
+
+```bash
+mvn -Dtest=BookingTest test
+```
+
+**3. Rodar métodos específicos de uma classe**
+
+```bash
+mvn -Dtest=NomeDaClasseDeTeste#nomeDoMetodo test
+```
+
+```bash
+mvn -Dtest=BookingTest#cadastrarReserva test
+```
+
+**4. Rodar testes por tag (JUnit 5)**
+
+```bash
+mvn test -Dgroups=tag
+```
+
+```bash
+mvn test -Dgroups=cadastro
+```
+
 
 Esse comando gera o relatório e abre automaticamente no navegador padrão.
 
