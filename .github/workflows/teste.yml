@@ -2,10 +2,13 @@ name: Testes Automatizados - Rest Assured
 
 on:
   push:
-    branches: [ "main", "master" ] # Altere para a branch principal do seu projeto se for diferente
+    branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Adicione esta linha para habilitar o botão manual
+  workflow_dispatch:
+
+permissions:
+  contents: write  # necessário para publicar o relatório na branch gh-pages
 
 jobs:
   test:
@@ -16,7 +19,7 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      # 2. Configura a versão do Java JDK (mude para '11', '17' ou '21' conforme o seu projeto)
+      # 2. Configura a versão do Java JDK
       - name: Configurar o Java JDK
         uses: actions/setup-java@v4
         with:
@@ -24,6 +27,41 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      # 3. Executa a limpeza e os testes automatizados via Maven
+      # 3. Executa os testes (não trava o build mesmo com falhas, graças ao testFailureIgnore)
       - name: Executar testes com Maven
         run: mvn clean test
+
+      # 4. Busca o histórico das execuções anteriores (fica salvo na branch gh-pages)
+      - name: Carregar histórico do Allure
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Copiar histórico anterior para os resultados atuais
+        if: always()
+        run: |
+          mkdir -p target/allure-results/history
+          if [ -d "gh-pages/history" ]; then
+            cp -r gh-pages/history/* target/allure-results/history/ || true
+          fi
+
+      # 5. Gera o relatório HTML já com o histórico incluído
+      - name: Gerar relatório Allure
+        if: always()
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_results: target/allure-results
+          allure_history: allure-history
+          keep_reports: 20
+
+      # 6. Publica o relatório (com o novo histórico) na branch gh-pages
+      - name: Publicar relatório no GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history

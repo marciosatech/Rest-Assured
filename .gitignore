@@ -37,3 +37,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Allure (binário baixado localmente pelo plugin allure-maven)
+.allure/
