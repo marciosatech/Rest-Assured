@@ -145,3 +145,14 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
           force_orphan: true
+
+      # 9. Adiciona o link direto do relatório desta execução no Job Summary
+      - name: Publicar link do relatório Allure
+        if: always()
+        run: |
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ github.run_number }}/index.html"
+          {
+            echo ""
+            echo "---"
+            echo "📄 **[Abrir relatório completo do Allure](${REPORT_URL})**"
+          } >> "$GITHUB_STEP_SUMMARY"
